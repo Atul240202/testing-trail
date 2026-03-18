@@ -1,109 +1,112 @@
 /**
  * User Controller
- * 
+ *
  * Handles user-related operations like profile updates and onboarding.
  */
 
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-import User from '../models/User.js';
-import { logger } from '../utils/logger.js';
-import UserProfile from '../models/userProfile.js';
-import { ONBOARDING_V1, ONBOARDING_VERSION } from '../constants/onboardingQuestions.js';
+import User from "../models/User.js";
+import { logger } from "../utils/logger.js";
+import UserProfile from "../models/UserProfile.js";
+import {
+  ONBOARDING_V1,
+  ONBOARDING_VERSION,
+} from "../constants/onboardingQuestions.js";
 
 export const createUser = async (request, response) => {
-    try {
-        const { googleId, email, name, photoUrl } = request.body;
+  try {
+    const { googleId, email, name, photoUrl } = request.body;
 
-        if (!googleId || !email) {
-            return response.status(400).json({
-                success: false,
-                message: "googleId and email are required",
-            });
-        }
-
-        const existingUser = await User.findOne({ googleId });
-
-        if (existingUser) {
-            return response.status(200).json({
-                success: true,
-                message: "User already exists",
-                data: {
-                    _id: existingUser._id,
-                    email: existingUser.email,
-                    name: existingUser.name,
-                    photoUrl: existingUser.photoUrl,
-                    onboardingCompleted: existingUser.onboardingCompleted,
-                },
-            });
-        }
-
-        const user = await User.create({
-            googleId,
-            email,
-            name,
-            photoUrl
-        });
-
-        return response.status(201).json({
-            success: true,
-            message: "User created successfully",
-            data: {
-                _id: user._id,
-                email: user.email,
-                name: user.name,
-                photoUrl: user.photoUrl,
-                onboardingCompleted: user.onboardingCompleted,
-            },
-        });
-    } catch (error) {
-        logger.error('Create user error:', error);
-        return response.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
+    if (!googleId || !email) {
+      return response.status(400).json({
+        success: false,
+        message: "googleId and email are required",
+      });
     }
+
+    const existingUser = await User.findOne({ googleId });
+
+    if (existingUser) {
+      return response.status(200).json({
+        success: true,
+        message: "User already exists",
+        data: {
+          _id: existingUser._id,
+          email: existingUser.email,
+          name: existingUser.name,
+          photoUrl: existingUser.photoUrl,
+          onboardingCompleted: existingUser.onboardingCompleted,
+        },
+      });
+    }
+
+    const user = await User.create({
+      googleId,
+      email,
+      name,
+      photoUrl,
+    });
+
+    return response.status(201).json({
+      success: true,
+      message: "User created successfully",
+      data: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        photoUrl: user.photoUrl,
+        onboardingCompleted: user.onboardingCompleted,
+      },
+    });
+  } catch (error) {
+    logger.error("Create user error:", error);
+    return response.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 export const updateOnboarding = async (req, res) => {
-    try {
-        if (!req.userId || !req.userId.match(/^[0-9a-fA-F]{24}$/)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid user ID',
-            });
-        }
-
-        const user = await User.findById(req.userId);
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found',
-            });
-        }
-
-        user.onboardingCompleted = true;
-        await user.save();
-
-        return res.status(200).json({
-            success: true,
-            message: 'Onboarding completed successfully',
-            data: {
-                _id: user._id,
-                email: user.email,
-                name: user.name,
-                photoUrl: user.photoUrl,
-                onboardingCompleted: user.onboardingCompleted,
-            },
-        });
-    } catch (error) {
-        logger.error('Update onboarding error:', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Internal server error',
-        });
+  try {
+    if (!req.userId || !req.userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID",
+      });
     }
+
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    user.onboardingCompleted = true;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Onboarding completed successfully",
+      data: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        photoUrl: user.photoUrl,
+        onboardingCompleted: user.onboardingCompleted,
+      },
+    });
+  } catch (error) {
+    logger.error("Update onboarding error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };
 
 export const completeOnboarding = async (req, res) => {
@@ -113,29 +116,29 @@ export const completeOnboarding = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({
       success: false,
-      message: "Invalid user ID"
+      message: "Invalid user ID",
     });
   }
 
   if (!responses || !Array.isArray(responses)) {
     return res.status(400).json({
       success: false,
-      message: "Responses array is required"
+      message: "Responses array is required",
     });
   }
 
   const requiredIds = ONBOARDING_V1;
 
-  const receivedIds = responses.map(r => r.id);
+  const receivedIds = responses.map((r) => r.id);
 
-  const allQuestionsAnswered = requiredIds.every(id =>
-    receivedIds.includes(id)
+  const allQuestionsAnswered = requiredIds.every((id) =>
+    receivedIds.includes(id),
   );
 
   if (!allQuestionsAnswered) {
     return res.status(400).json({
       success: false,
-      message: "All onboarding questions must be answered"
+      message: "All onboarding questions must be answered",
     });
   }
 
@@ -145,7 +148,7 @@ export const completeOnboarding = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -155,11 +158,11 @@ export const completeOnboarding = async (req, res) => {
         $set: {
           onboardingVersion: ONBOARDING_VERSION,
           responses: {
-            values: responses
-          }
-        }
+            values: responses,
+          },
+        },
       },
-      { upsert: true }
+      { upsert: true },
     );
 
     user.onboardingCompleted = true;
@@ -167,14 +170,13 @@ export const completeOnboarding = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Onboarding completed successfully"
+      message: "Onboarding completed successfully",
     });
-
   } catch (error) {
     logger.error("Complete onboarding failed", {
       userId,
-      error: error.message
-    })
+      error: error.message,
+    });
 
     return res.status(500).json({
       success: false,
@@ -198,7 +200,7 @@ export const updateFcmToken = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       userId,
       { fcmToken },
-      { new: true }
+      { new: true },
     );
 
     return res.status(200).json({
@@ -206,7 +208,6 @@ export const updateFcmToken = async (req, res) => {
       message: "FCM token updated",
       data: user,
     });
-
   } catch (error) {
     logger.error("Update FCM token error:", error);
 
