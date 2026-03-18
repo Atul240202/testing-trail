@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "13944615148",
+    "project_id": "pause-v1-4be87",
+    "storage_bucket": "pause-v1-4be87.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:13944615148:android:e1585dc3fc2a483209b5c9",
+        "android_client_info": {
+          "package_name": "com.pausefrontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtK7GBWFLPQinjCJmMu6ok8lrF1vm9z5M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

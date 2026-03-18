@@ -1,0 +1,25 @@
+.DS_Store
+._*
+node_modules/
+backend/node_modules/
+mobile/node_modules/
+.env
+backend/.env
+mobile/.env
+ios/Pods/
+mobile/ios/Pods/
+mobile/ios/build/
+mobile/ios/.xcode.env.local
+android/build/
+android/.gradle/
+mobile/android/build/
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/app/.cxx/
+.vscode/
+.idea/
+*.log
+vendor/
+
+# Note: package-lock.json files should be committed for consistent builds
+# They are NOT ignored to ensure reproducible installs
